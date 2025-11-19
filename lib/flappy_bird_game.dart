@@ -5,6 +5,8 @@ import 'package:flame/game.dart';
 import 'package:flappy_bird/components/background.dart';
 import 'package:flappy_bird/components/bird.dart';
 import 'package:flappy_bird/components/ground.dart';
+import 'package:flappy_bird/components/pipe.dart';
+import 'package:flappy_bird/components/pipe_manager.dart';
 import 'package:flappy_bird/utils/configuration.dart';
 import 'package:flutter/material.dart';
 
@@ -22,6 +24,7 @@ class FlappyBirdGame extends FlameGame
   late Bird bird;
   late Background background;
   late Ground ground;
+  late PipeManager pipeManager;
 
   @override
   FutureOr<void> onLoad() {
@@ -29,13 +32,17 @@ class FlappyBirdGame extends FlameGame
     background = Background(size);
     add(background);
 
+    // Load Bird
+    bird = Bird();
+    add(bird);
+
     // Load Ground
     ground = Ground();
     add(ground);
 
-    // Load Bird
-    bird = Bird();
-    add(bird);
+    // Load Pipes
+    pipeManager = PipeManager();
+    add(pipeManager);
   }
 
   @override
@@ -57,6 +64,8 @@ class FlappyBirdGame extends FlameGame
   }
 
   void showRestartDialog() {
+    if (buildContext == null) return;
+
     showDialog(
       context: buildContext!,
       builder: (context) => AlertDialog(
@@ -65,7 +74,6 @@ class FlappyBirdGame extends FlameGame
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-
               resetGame();
             },
             child: const Text('Restart'),
@@ -79,6 +87,7 @@ class FlappyBirdGame extends FlameGame
     bird.position = Vector2(Config.birdStartX, Config.birdStartY);
     bird.velocity = 0;
     isGameOver = false;
+    children.whereType<Pipe>().forEach((pipe) => pipe.removeFromParent());
     resumeEngine();
   }
 }
