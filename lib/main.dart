@@ -1,3 +1,5 @@
+import 'package:flame/game.dart';
+import 'package:flappy_bird/flappy_bird_game.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,6 +14,7 @@ class FlappyBird extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
+      home: GameWidget(game: FlappyBirdGame()),
     );
   }
 }
