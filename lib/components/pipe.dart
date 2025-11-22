@@ -10,6 +10,7 @@ class Pipe extends SpriteComponent
     with HasGameReference<FlappyBirdGame>, CollisionCallbacks {
   // determine if the pipe is top or bottom
   final bool isTopPipe;
+  bool scored = false;
 
   Pipe(Vector2 position, Vector2 size, {required this.isTopPipe})
     : super(position: position, size: size);

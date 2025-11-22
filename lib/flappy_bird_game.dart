@@ -7,6 +7,7 @@ import 'package:flappy_bird/components/bird.dart';
 import 'package:flappy_bird/components/ground.dart';
 import 'package:flappy_bird/components/pipe.dart';
 import 'package:flappy_bird/components/pipe_manager.dart';
+import 'package:flappy_bird/components/score.dart';
 import 'package:flappy_bird/utils/configuration.dart';
 import 'package:flutter/material.dart';
 
@@ -25,6 +26,9 @@ class FlappyBirdGame extends FlameGame
   late Background background;
   late Ground ground;
   late PipeManager pipeManager;
+  late Score scoreComponent;
+
+  int score = 0;
 
   @override
   FutureOr<void> onLoad() {
@@ -43,12 +47,35 @@ class FlappyBirdGame extends FlameGame
     // Load Pipes
     pipeManager = PipeManager();
     add(pipeManager);
+
+    // Load Score
+    scoreComponent = Score();
+    add(scoreComponent);
   }
 
   @override
   void onTapDown(TapDownEvent event) {
     bird.flap();
     super.onTapDown(event);
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    checkScore();
+  }
+
+  void checkScore() {
+    if (isGameOver) return;
+
+    for (final pipe in children.whereType<Pipe>()) {
+      if (pipe.isTopPipe && !pipe.scored) {
+        if (bird.position.x > pipe.position.x + pipe.size.x) {
+          score += 1;
+          pipe.scored = true;
+        }
+      }
+    }
   }
 
   // Game Over
@@ -86,6 +113,7 @@ class FlappyBirdGame extends FlameGame
   void resetGame() {
     bird.position = Vector2(Config.birdStartX, Config.birdStartY);
     bird.velocity = 0;
+    score = 0;
     isGameOver = false;
     children.whereType<Pipe>().forEach((pipe) => pipe.removeFromParent());
     resumeEngine();
